@@ -1,17 +1,22 @@
 import streamlit as st
 import datetime
 import time
+from zoneinfo import ZoneInfo
 
 # ==========================================
 # CONFIGURATION & SAMPLE DATA
 # ==========================================
 RECIPIENT_NAME = "Ir.² Antoine Grosjean"
+
+# Configuration du fuseau horaire pour éviter les décalages sur le serveur
+LOCAL_TZ = ZoneInfo("Europe/Brussels")
 # Set the expected delivery date for the physical gift (Year, Month, Day, Hour, Minute)
-DELIVERY_DATE = datetime.datetime(2026, 8, 12, 18, 30) 
+DELIVERY_DATE = datetime.datetime(2026, 8, 12, 18, 30, tzinfo=LOCAL_TZ) 
+
 GIFT_TITLE = "Ceinture La Boucle - The York"
 GIFT_DESC = "Elle est actuellement en chemin et arrivera très bientôt."
 GIFT_FILENAME = "belt.png"
-GIFT_URL = "https://laboucle.com/fr/collections/chevron-club/products/york"
+GIFT_URL = "https://laboucle.com/products/the-york" # Remplacez par le lien exact du produit
 
 PERSONAL_MESSAGE = """
 **Joyeux anniversaire Antoine !!!** 🎂
@@ -122,23 +127,24 @@ else:
     # C. COUNTDOWN TIMER
     st.markdown("#### ⏳ Quand est-ce que ça arrive ?")
     
-    now = datetime.datetime.now()
+    # Récupération de l'heure actuelle avec le bon fuseau horaire
+    now = datetime.datetime.now(LOCAL_TZ)
     time_diff = DELIVERY_DATE - now
     
     if time_diff.total_seconds() > 0:
         days = time_diff.days
         hours, remainder = divmod(time_diff.seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
+        minutes, _ = divmod(remainder, 60)
         
-        col1, col2, col3, col4 = st.columns(4)
+        # Passage à 3 colonnes pour mieux s'adapter aux écrans mobiles
+        col1, col2, col3 = st.columns(3)
         col1.metric("Jours", days)
         col2.metric("Heures", hours)
         col3.metric("Min", minutes)
-        col4.metric("Sec", seconds)
         
         st.caption("*Note : Actualise cette page pour mettre à jour le compte à rebours !*")
     else:
-        st.info("📦 Ca devrait déjà être livré ! Contacte l'assistance technique si ce n'est pas le cas.")
+        st.info("📦 D'après le suivi, ça devrait déjà être livré ! Va vérifier !")
 
     st.divider()
 
