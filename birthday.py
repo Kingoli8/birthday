@@ -131,16 +131,17 @@ else:
     now = datetime.datetime.now(LOCAL_TZ)
     time_diff = DELIVERY_DATE - now
     
-    if time_diff.total_seconds() > 0:
-        days = time_diff.days
-        hours, remainder = divmod(time_diff.seconds, 3600)
+    total_seconds = int(time_diff.total_seconds())
+    
+    if total_seconds > 0:
+        # Calcul du total des heures (incluant les jours convertis en heures)
+        hours, remainder = divmod(total_seconds, 3600)
         minutes, _ = divmod(remainder, 60)
         
-        # Passage à 3 colonnes pour mieux s'adapter aux écrans mobiles
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Jours", days)
-        col2.metric("Heures", hours)
-        col3.metric("Min", minutes)
+        # Passage à 2 colonnes pour un affichage optimal sur mobile
+        col1, col2 = st.columns(2)
+        col1.metric("Heures", hours)
+        col2.metric("Min", minutes)
         
         st.caption("*Note : Actualise cette page pour mettre à jour le compte à rebours !*")
     else:
